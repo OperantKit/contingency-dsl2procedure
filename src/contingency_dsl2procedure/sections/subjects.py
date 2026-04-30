@@ -29,8 +29,14 @@ def render_subjects(
     species = attrs.get("species", "")
     strain = attrs.get("strain", "")
     n = attrs.get("n")
+    population = attrs.get("population", "")
     deprivation = attrs.get("deprivation", {})
     history = attrs.get("history", "")
+
+    # When @species is "human" and @population is set ("children", "adults",
+    # ...), the population term reads more naturally than the bare species.
+    if species == "human" and population:
+        species = population[:-1] if population.endswith("s") else population
 
     sentences: list[str] = []
 
@@ -53,6 +59,11 @@ def _extract_subject_attrs(program: ProgramNode) -> dict:
 
     Accepts both unbundled (``@species("pigeon")``) and bundled
     (``@subjects(species="pigeon", n=4)``) annotation shapes.
+
+    When multiple @species values are present (e.g. cross-species review or
+    multi-cohort study) only the first is used for sentence generation to
+    keep render_subjects → extract_subject_annotations round-trips stable.
+    Later conflicting @species values are ignored.
     """
     result: dict = {}
     anns = expand_bundled_annotations(
@@ -61,11 +72,18 @@ def _extract_subject_attrs(program: ProgramNode) -> dict:
     for ann in anns:
         kw = ann.get("keyword", "")
         if kw == "species":
-            result["species"] = ann.get("positional", "")
+            # First-wins to match extract_subject_annotations reading order.
+            if "species" not in result:
+                result["species"] = ann.get("positional", "")
+        elif kw == "population":
+            if "population" not in result:
+                result["population"] = ann.get("positional", "")
         elif kw == "strain":
-            result["strain"] = ann.get("positional", "")
+            if "strain" not in result:
+                result["strain"] = ann.get("positional", "")
         elif kw == "n":
-            result["n"] = int(ann.get("positional", 0))
+            if "n" not in result:
+                result["n"] = int(ann.get("positional", 0))
         elif kw == "deprivation":
             result["deprivation"] = ann.get("params", {})
         elif kw == "history":
@@ -141,7 +159,23 @@ def _number_to_word(n: int, style: Style) -> str:
 
 
 def _pluralize(species: str) -> str:
-    irregulars = {"mouse": "mice", "goose": "geese"}
+    # Words that are already plural or have an invariant plural.
+    already_plural = {
+        "children", "mice", "geese", "men", "women", "people",
+        "sheep", "fish",
+        "adults", "infants", "adolescents", "students", "participants",
+        "humans", "individuals", "boys", "girls", "rats", "pigeons",
+    }
+    if species.lower() in already_plural:
+        return species
+    irregulars = {
+        "mouse": "mice",
+        "goose": "geese",
+        "child": "children",
+        "man": "men",
+        "woman": "women",
+        "person": "people",
+    }
     if species.lower() in irregulars:
         return irregulars[species.lower()]
     if species.lower().endswith(("s", "sh", "ch")):

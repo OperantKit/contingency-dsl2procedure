@@ -68,11 +68,25 @@ def compile_paper(
     if not isinstance(ast, dict):
         return []
     if ast.get("type") == "Paper":
+        paper_shared = ast.get("shared_annotations", []) or []
         out: list[tuple[str, MethodSection]] = []
         for exp in ast.get("experiments", []) or []:
             label = exp.get("label", "")
             body = exp.get("body", {})
             program, extra_ps = _unwrap_root(body)
+            # Merge Paper-level shared_annotations into each experiment so
+            # that subject/apparatus info stated once at the top applies to
+            # every experiment (experiment-level wins on keyword collision).
+            if paper_shared and isinstance(program, dict):
+                existing = list(program.get("program_annotations", []) or [])
+                existing_kws = {
+                    a.get("keyword") for a in existing if isinstance(a, dict)
+                }
+                merged = list(existing)
+                for a in paper_shared:
+                    if isinstance(a, dict) and a.get("keyword") not in existing_kws:
+                        merged.append(a)
+                program = {**program, "program_annotations": merged}
             method = _compile_single(
                 program, extra_ps, style=style,
                 extra_references=extra_references,
