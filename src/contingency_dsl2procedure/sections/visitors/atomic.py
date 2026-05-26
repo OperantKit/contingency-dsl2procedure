@@ -31,7 +31,13 @@ def visit_atomic(
         if first_mention
         else format_atomic_abbrev(node, style)
     )
-    if refs is not None and dist == "V":
-        refs.cite("fleshler_hoffman_1962")
+    domain = node.get("domain")
+    if refs is not None:
+        if dist == "V":
+            refs.cite("fleshler_hoffman_1962")
+        if domain == "T" and dist in ("V", "F"):
+            refs.cite_if_known("zeiler_1968")
+        if dist == "R" and domain == "I":
+            refs.cite_if_known("millenson_1963")
     base = style.framing_reinforced.format(schedule=name)
     return decorate_leaf(base, node, style=style)

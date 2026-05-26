@@ -32,6 +32,13 @@ def visit_compound(
             if c.get("type") == "Atomic" and c.get("dist") == "V":
                 refs.cite("fleshler_hoffman_1962")
                 break
+        combinator_refs = {
+            "Mix": "mcsweeney_norman_1979",
+            "Tand": "malagodi_1973",
+        }
+        key = combinator_refs.get(combinator)
+        if key is not None:
+            refs.cite_if_known(key)
 
     params = node.get("params", {}) or {}
 
@@ -52,6 +59,13 @@ def visit_compound(
         schedule=f"{comb_name} {components_str}"
     )
 
+    sd_note = _sd_note(combinator, style)
+    if sd_note:
+        if style.locale == "ja":
+            base = base.rstrip("。") + "。" + sd_note
+        else:
+            base = base.rstrip(".") + ". " + sd_note
+
     # Append compound-level parameter clauses (COD, FRCO, BO, PUNISH)
     extra_parts = _describe_compound_params(combinator, params, style, refs)
     if extra_parts:
@@ -61,6 +75,40 @@ def visit_compound(
             base = base.rstrip(".") + ". " + " ".join(extra_parts)
 
     return decorate_leaf(base, node, style=style)
+
+
+# --- SD (discriminative-stimulus) note ---------------------------------------
+
+_SD_NOTES_EN: dict[str, str] = {
+    "Mult": (
+        "Each component was signaled by a distinct exteroceptive "
+        "discriminative stimulus."
+    ),
+    "Mix": (
+        "No exteroceptive discriminative stimulus differentiated the "
+        "components."
+    ),
+    "Chain": (
+        "Successive components were signaled by distinct exteroceptive "
+        "discriminative stimuli."
+    ),
+    "Tand": (
+        "Component transitions occurred without any change in the "
+        "exteroceptive discriminative stimulus."
+    ),
+}
+
+_SD_NOTES_JA: dict[str, str] = {
+    "Mult": "各成分はそれぞれ固有の外受容性弁別刺激で標識された。",
+    "Mix": "成分を区別する外受容性弁別刺激は呈示されなかった。",
+    "Chain": "各成分はそれぞれ固有の外受容性弁別刺激で標識された。",
+    "Tand": "成分の移行に伴う外受容性弁別刺激の変化は呈示されなかった。",
+}
+
+
+def _sd_note(combinator: str, style: Style) -> str:
+    table = _SD_NOTES_JA if style.locale == "ja" else _SD_NOTES_EN
+    return table.get(combinator, "")
 
 
 # --- Overlay -----------------------------------------------------------------
@@ -154,10 +202,14 @@ def _describe_compound_params(
 
     cod = params.get("COD")
     if cod is not None:
+        if refs is not None:
+            refs.cite_if_known("herrnstein_1961")
         sentences.extend(_describe_cod(cod, style))
 
     frco = params.get("FRCO")
     if frco is not None:
+        if refs is not None:
+            refs.cite_if_known("hunter_davison_1985")
         count = int(frco.get("value", 0))
         if style.locale == "ja":
             sentences.append(f"{count}反応の固定比率切替が設定された。")

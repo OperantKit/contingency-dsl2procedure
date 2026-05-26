@@ -326,6 +326,113 @@ BOUTON_2004 = Reference(
     doi="https://doi.org/10.1101/lm.78804",
 )
 
+SKINNER_1953 = Reference(
+    key="skinner_1953",
+    authors="Skinner, B. F.",
+    year=1953,
+    title="Science and human behavior",
+    source="Macmillan",
+)
+
+GALBICKA_1994 = Reference(
+    key="galbicka_1994",
+    authors="Galbicka, G.",
+    year=1994,
+    title="Shaping in the 21st century: Moving percentile schedules into applied settings",
+    source="Journal of Applied Behavior Analysis",
+    volume="27",
+    pages="739-760",
+    doi="https://doi.org/10.1901/jaba.1994.27-739",
+)
+
+ZEILER_1968 = Reference(
+    key="zeiler_1968",
+    authors="Zeiler, M. D.",
+    year=1968,
+    title="Fixed and variable schedules of response-independent reinforcement",
+    source="Journal of the Experimental Analysis of Behavior",
+    volume="11",
+    pages="405-414",
+    doi="https://doi.org/10.1901/jeab.1968.11-405",
+)
+
+MILLENSON_1963 = Reference(
+    key="millenson_1963",
+    authors="Millenson, J. R.",
+    year=1963,
+    title="Random interval schedules of reinforcement",
+    source="Journal of the Experimental Analysis of Behavior",
+    volume="6",
+    pages="437-443",
+    doi="https://doi.org/10.1901/jeab.1963.6-437",
+)
+
+MCSWEENEY_NORMAN_1979 = Reference(
+    key="mcsweeney_norman_1979",
+    authors="McSweeney, F. K., & Norman, W. D.",
+    year=1979,
+    title="Defining behavioral contrast for multiple schedules",
+    source="Journal of the Experimental Analysis of Behavior",
+    volume="32",
+    pages="457-461",
+    doi="https://doi.org/10.1901/jeab.1979.32-457",
+)
+
+MALAGODI_1973 = Reference(
+    key="malagodi_1973",
+    authors="Malagodi, E. F., DeWeese, J., & Johnston, J. M.",
+    year=1973,
+    title="Second-order schedules: A comparison of chained, brief-stimulus, and tandem procedures",
+    source="Journal of the Experimental Analysis of Behavior",
+    volume="20",
+    pages="447-461",
+    doi="https://doi.org/10.1901/jeab.1973.20-447",
+)
+
+RICHARDS_1993 = Reference(
+    key="richards_1993",
+    authors="Richards, J. B., Sabol, K. E., & Seiden, L. S.",
+    year=1993,
+    title="DRL interresponse-time distributions: Quantification by peak deviation analysis",
+    source="Journal of the Experimental Analysis of Behavior",
+    volume="60",
+    pages="361-385",
+    doi="https://doi.org/10.1901/jeab.1993.60-361",
+)
+
+REED_2003 = Reference(
+    key="reed_2003",
+    authors="Reed, P.",
+    year=2003,
+    title="The differentiation of response rates by humans: The role of differential-reinforcement-of-high-rate (DRH) schedules",
+    source="Animal Learning & Behavior",
+    volume="31",
+    pages="227-238",
+    doi="https://doi.org/10.3758/bf03195983",
+)
+
+REY_2019 = Reference(
+    key="rey_2019",
+    authors="Rey, C. N., Thrailkill, E. A., Goldberg, K. L., & Bouton, M. E.",
+    year=2019,
+    title="Relapse of operant behavior after response elimination with an extinction or an omission contingency",
+    source="Journal of the Experimental Analysis of Behavior",
+    volume="113",
+    pages="1-17",
+    doi="https://doi.org/10.1002/jeab.568",
+)
+
+HUNTER_DAVISON_1985 = Reference(
+    key="hunter_davison_1985",
+    authors="Hunter, I., & Davison, M.",
+    year=1985,
+    title="Determination of a behavioral transfer function: White-noise analysis of session-to-session response-ratio dynamics on concurrent VI VI schedules",
+    source="Animal Learning & Behavior",
+    volume="13",
+    pages="293-299",
+    doi="https://doi.org/10.3758/BF03197983",
+)
+
 # Lookup table: key -> Reference
 BUILTIN_REFERENCES: dict[str, Reference] = {
     r.key: r
@@ -349,6 +456,16 @@ BUILTIN_REFERENCES: dict[str, Reference] = {
         BROWN_JENKINS_1968,
         WILLIAMS_WILLIAMS_1969,
         BOUTON_2004,
+        SKINNER_1953,
+        GALBICKA_1994,
+        ZEILER_1968,
+        MILLENSON_1963,
+        MCSWEENEY_NORMAN_1979,
+        MALAGODI_1973,
+        RICHARDS_1993,
+        REED_2003,
+        REY_2019,
+        HUNTER_DAVISON_1985,
     ]
 }
 

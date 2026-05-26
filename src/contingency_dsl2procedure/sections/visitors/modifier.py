@@ -21,7 +21,7 @@ def visit_modifier(
     modifier = node.get("modifier", "")
 
     if modifier in ("DRL", "DRH", "DRO"):
-        return _dr(node, style)
+        return _dr(node, style, refs)
     if modifier == "PR":
         return _pr(node, style, refs)
     if modifier == "Lag":
@@ -41,10 +41,20 @@ def visit_modifier(
     return ""
 
 
-def _dr(node: ScheduleNode, style: Style) -> str:
+def _dr(node: ScheduleNode, style: Style, refs: ReferenceCollector | None) -> str:
     modifier = node.get("modifier", "")
     value = node.get("value", 0)
     unit = node.get("time_unit")
+
+    if refs is not None:
+        dr_refs = {
+            "DRL": "richards_1993",
+            "DRH": "reed_2003",
+            "DRO": "rey_2019",
+        }
+        key = dr_refs.get(modifier)
+        if key is not None:
+            refs.cite_if_known(key)
 
     names_en = {
         "DRL": "differential-reinforcement-of-low-rate",
