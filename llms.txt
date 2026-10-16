@@ -1,0 +1,47 @@
+# contingency-dsl2procedure
+
+> Compiles a contingency-dsl schedule AST (a plain JSON dict, for example `Conc(VI30s, VI60s, COD=2s)`) into Method-section prose for behavior-analytic papers in JEAB (English) or J-ABA (Japanese) style, with the references it cites collected automatically. Zero runtime dependencies.
+
+contingency-dsl2procedure is part of OperantKit, a set of Python/Rust packages for designing and running operant and respondent conditioning experiments (reinforcement schedules, session recording, analysis). Use it instead of hand-writing Method-section templates: it covers atomic, compound, modifier, second-order, aversive, trial-based, respondent, and multi-phase schedules, writes changeover delay and other parameters as sentences, notes whether components were signaled by discriminative stimuli, and cites primary sources.
+
+## Install
+
+```bash
+pip install git+https://github.com/OperantKit/contingency-dsl2procedure
+```
+
+## Minimal example
+
+```python
+from contingency_dsl2procedure import compile_method
+
+ast = {
+    "type": "Program", "param_decls": [], "bindings": [],
+    "schedule": {
+        "type": "Compound", "combinator": "Conc",
+        "components": [
+            {"type": "Atomic", "dist": "V", "domain": "I", "value": 30.0, "time_unit": "s"},
+            {"type": "Atomic", "dist": "V", "domain": "I", "value": 60.0, "time_unit": "s"},
+        ],
+        "params": {"COD": {"value": 2.0, "time_unit": "s"}},
+    },
+}
+method = compile_method(ast, style="jeab")  # or style="jaba" for Japanese
+print(method.procedure)
+# Responses were reinforced under a concurrent VI 30-s VI 60-s schedule. A 2-s changeover delay was in effect.
+print([ref.key for ref in method.references])  # ['fleshler_hoffman_1962', 'herrnstein_1961']
+```
+
+`compile_method` returns a `MethodSection` with `subjects`, `apparatus`, `procedure`, and `references`; `method.to_text()` renders the whole section as Markdown. `compile_paper` handles multi-experiment `Paper` roots. The `contingency-dsl2procedure INPUT [--style jeab|jaba] [--output PATH]` command does the same from a JSON file or stdin. To start from DSL text, produce the dict with `to_dict(parse(source))` from contingency-dsl-py.
+
+## Docs
+
+- [README](https://github.com/OperantKit/contingency-dsl2procedure/blob/main/README.md): install, 30-second example, why not to hand-roll a generator, usage
+- [AGENTS.md](https://github.com/OperantKit/contingency-dsl2procedure/blob/main/AGENTS.md): when to use this package and what not to do
+
+## Related packages
+
+- [contingency-dsl](https://github.com/OperantKit/contingency-dsl): the schedule language specification and its AST schema
+- [contingency-dsl-py](https://github.com/OperantKit/contingency-dsl-py): parses DSL text into the AST dict this package reads (`pip install contingency-dsl-py`)
+- [contingency-procedure2dsl](https://github.com/OperantKit/contingency-procedure2dsl): the reverse direction, Method-section text to AST (`pip install git+https://github.com/OperantKit/contingency-procedure2dsl`)
+- [contingency-py](https://github.com/OperantKit/contingency-py): runs the same schedule as a reinforcement schedule engine (`pip install contingency-py`)
