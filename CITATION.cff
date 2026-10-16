@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+title: "contingency-dsl2procedure"
+authors:
+  - family-names: "Mizutani"
+    given-names: "Yuto"
+repository-code: "https://github.com/OperantKit/contingency-dsl2procedure"
+license: MIT
+abstract: "Compiler from contingency-dsl AST to academic paper Method sections (JEAB/JABA style)."
