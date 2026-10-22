@@ -16,6 +16,7 @@ can override formatting.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -52,9 +53,21 @@ class Reference:
             parts.append(self.doi)
         return " ".join(parts)
 
+    def surnames(self) -> list[str]:
+        """Author surnames from the reference-list form 'Last, F. M., & Last, F.'."""
+        found = re.findall(r"([^\s,&][^,&]*?),\s*(?:[A-Z]\.\s*-?)+", self.authors)
+        return [s.strip() for s in found] or [self.authors]
+
     def to_inline(self) -> str:
-        """Render as inline citation: 'Authors (Year)'."""
-        return f"{self.authors} ({self.year})"
+        """Render as APA narrative citation: 'Surname and Surname (Year)'."""
+        names = self.surnames()
+        if len(names) == 1:
+            who = names[0]
+        elif len(names) == 2:
+            who = f"{names[0]} and {names[1]}"
+        else:
+            who = f"{names[0]} et al."
+        return f"{who} ({self.year})"
 
     def to_parenthetical(self) -> str:
         """Render as parenthetical citation: '(Authors, Year)'."""

@@ -332,6 +332,7 @@ def _describe_components(
     reinforcer = ""
     punisher_params: list[dict] = []
     sd_map: dict[int, str] = {}
+    program_sds: list[str] = []
 
     for ann in _program_annotations(program):
         kw = ann.get("keyword", "")
@@ -347,6 +348,8 @@ def _describe_components(
             comp = params.get("component")
             if comp is not None:
                 sd_map[int(comp)] = str(positional or "")
+            elif positional:
+                program_sds.append(str(positional))
 
     if reinforcer:
         if style.locale == "ja":
@@ -364,6 +367,17 @@ def _describe_components(
             else:
                 items = ", ".join(names[:-1]) + f", and {names[-1]}"
                 sentences.append(f"{items} served as punishers.")
+
+    # Discriminative stimuli not tied to a component: one sentence each, in
+    # annotation order, so the reader's "in the presence of X" form recovers
+    # them in the same order.
+    for sd in program_sds:
+        if style.locale == "ja":
+            sentences.append(f"反応は（{humanize(sd)}点灯時）に記録した。")
+        else:
+            sentences.append(
+                f"Responding was recorded in the presence of {humanize(sd)}."
+            )
 
     schedule = program.get("schedule", {})
     if operanda and schedule.get("type") == "Compound":
@@ -486,7 +500,7 @@ def _render_warmup(ann: dict, style: Style) -> str:
         dur_unit = dur.get("time_unit", "s")
     else:
         dur_val = float(dur)
-        dur_unit = "s"
+        dur_unit = params.get("time_unit", "s")
     dur_str = format_duration(dur_val, dur_unit, style)
     if style.locale == "ja":
         return f"各セッション開始時に{dur_str}のウォームアップ期間を設けた。"
