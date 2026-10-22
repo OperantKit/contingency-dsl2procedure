@@ -179,16 +179,17 @@ def _visit_interpolate(
         return "".join(pieces)
 
     parts = [f"Responses were maintained on a {background} baseline."]
-    head = ""
+    block = f"an interpolated block of {interp}"
     if onset_str:
-        head = f"After {onset_str}, "
+        block = f"After {onset_str}, {block}"
+    else:
+        block = block[0].upper() + block[1:]
     if count is not None:
         parts.append(
-            f"{head}an interpolated block of {interp} was conducted "
-            f"for {int(count)} reinforcers."
+            f"{block} was conducted for {int(count)} reinforcers."
         )
     else:
-        parts.append(f"{head}an interpolated block of {interp} was conducted.")
+        parts.append(f"{block} was conducted.")
     return " ".join(parts)
 
 

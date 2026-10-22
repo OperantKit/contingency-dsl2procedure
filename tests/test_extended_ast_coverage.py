@@ -299,3 +299,38 @@ class TestShapingAnnotation:
         # procedure prose describing a CRF phase.
         assert m.procedure.strip()
         assert "Shaping" in m.procedure
+
+
+# --- Interpolate sentence capitalization ------------------------------------
+
+
+def _interpolate(params: dict) -> dict:
+    return _program({
+        "type": "Compound",
+        "combinator": "Interpolate",
+        "components": [
+            {"type": "Atomic", "dist": "F", "domain": "I",
+             "value": 15.0, "time_unit": "min"},
+            {"type": "Atomic", "dist": "F", "domain": "R", "value": 50.0},
+        ],
+        "params": params,
+    })
+
+
+class TestInterpolateCapitalization:
+    @pytest.mark.parametrize("params", [
+        {"count": {"value": 10}},
+        {},
+    ])
+    def test_sentence_without_onset_starts_uppercase(self, params: dict) -> None:
+        m = compile_method(_interpolate(params), style="jeab")
+        assert "An interpolated block of" in m.procedure
+        assert ". an interpolated" not in m.procedure
+
+    def test_sentence_with_onset_keeps_lowercase_after_clause(self) -> None:
+        ast = _interpolate({
+            "count": {"value": 10},
+            "onset": {"value": 3.0, "time_unit": "min"},
+        })
+        m = compile_method(ast, style="jeab")
+        assert ", an interpolated block of" in m.procedure
