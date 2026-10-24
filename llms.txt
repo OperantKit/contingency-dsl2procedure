@@ -42,6 +42,6 @@ print([ref.key for ref in method.references])  # ['fleshler_hoffman_1962', 'herr
 ## Related packages
 
 - [contingency-dsl](https://github.com/OperantKit/contingency-dsl): the schedule language specification and its AST schema
-- [contingency-dsl-py](https://github.com/OperantKit/contingency-dsl-py): parses DSL text into the AST dict this package reads (`pip install contingency-dsl-py`)
+- [contingency-dsl-py](https://github.com/OperantKit/contingency-dsl-py): parses DSL text into the AST dict this package reads
 - [contingency-procedure2dsl](https://github.com/OperantKit/contingency-procedure2dsl): the reverse direction, Method-section text to AST (`pip install git+https://github.com/OperantKit/contingency-procedure2dsl`)
-- [contingency-py](https://github.com/OperantKit/contingency-py): runs the same schedule as a reinforcement schedule engine (`pip install contingency-py`)
+- [contingency-py](https://github.com/OperantKit/contingency-py): runs the same schedule as a reinforcement schedule engine
