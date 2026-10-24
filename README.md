@@ -2,19 +2,27 @@
 
 :jp: [日本語版 README](README.ja.md)
 
-Compiler from [contingency-dsl](https://github.com/OperantKit/contingency-dsl) JSON AST to academic paper Method sections.
+contingency-dsl2procedure writes the Procedure paragraph of a Method section from a schedule of reinforcement, in the English style of the *Journal of the Experimental Analysis of Behavior* (JEAB) or in Japanese in the style of the Japanese Association for Behavior Analysis (J-ABA). When the schedule carries annotations, it also writes the Subjects and Apparatus paragraphs. It takes the parsed form of a [contingency-dsl](https://github.com/OperantKit/contingency-dsl) expression, so in [OperantKit](https://github.com/OperantKit) the expression that runs the session is the same one that produces its description.
 
-Zero external dependencies. Works with any parser that emits conformant `ast-schema.json`.
+**In short**
 
-## Install
+- The paragraph is generated from the schedule that was programmed, so parameters such as the changeover delay (COD) and the limited hold are stated, not forgotten.
+- References are added for the procedures actually used, from a built-in list of 29 sources (for example Fleshler & Hoffman, 1962, for VI progressions).
+- English and Japanese come from the same input.
+
+## Installation
+
+Python 3.11 or newer. The package is not on PyPI yet; install it from GitHub:
 
 ```bash
 pip install git+https://github.com/OperantKit/contingency-dsl2procedure
 ```
 
-## 30-second example
+It has no dependencies. To write schedules as text rather than as dictionaries, also install the parser [contingency-dsl-py](https://github.com/OperantKit/contingency-dsl-py): `pip install git+https://github.com/OperantKit/contingency-dsl-py`.
 
-Compile `Conc(VI30s, VI60s, COD=2s)`, given as an AST dict, into a JEAB-style Procedure paragraph, list the references it cites, and render the same schedule in J-ABA style (Japanese):
+## Example
+
+Compile `Conc(VI30s, VI60s, COD=2s)`, given as a parsed dictionary, into a JEAB-style paragraph, list the references it cites, and write the same schedule in J-ABA style:
 
 ```python
 from contingency_dsl2procedure import compile_method
@@ -44,56 +52,62 @@ print(compile_method(ast, style="jaba").procedure)
 # 並立 VI 30-s VI 60-sスケジュールに従って反応が強化された。2-sの切替遅延が設定された。
 ```
 
-`method.to_text()` renders the whole Method section (Subjects, Apparatus, Procedure, References) as Markdown. To write the schedule as text instead of a dict, parse it with [contingency-dsl-py](https://github.com/OperantKit/contingency-dsl-py) (`pip install contingency-dsl-py`): `to_dict(parse("Conc(VI30s, VI60s, COD=2s)"))` produces the dict above (plus an empty `program_annotations` list) and compiles to the same paragraph.
+`method.to_text()` returns the whole Method section as Markdown, with the References list:
 
-## Why not a 50-line hand-written generator?
+```
+## Method
 
-A template such as `f"a {name} {value}-s schedule"` covers one atomic schedule; a Method section needs the following, and each item is implemented and tested here:
+### Procedure
 
-- **Schedule coverage.** All 9 atomic schedules (F/V/R × ratio/interval/time: FR, VR, RR, FI, VI, RI, FT, VT, RT), 9 compound combinators (`Conc`, `Alt`, `Conj`, `Chain`, `Tand`, `Mult`, `Mix`, `Overlay`, `Interpolate`), plus modifiers (DRL, DRH, DRO, progressive ratio, and others), second-order, limited hold, aversive (Sidman avoidance, discriminated avoidance, escape), adjusting and interlocking, trial-based (matching-to-sample, go/no-go), respondent procedures, and multi-phase designs.
-- **Parameters in prose.** Changeover delay (`COD`), fixed-ratio changeover (`FRCO`), limited hold, blackout, and reinforcer delay are written as sentences rather than dropped.
-- **Discriminative-stimulus notes.** `Mult` and `Chain` state that components were signaled by distinct exteroceptive discriminative stimuli; `Mix` and `Tand` state that they were not, so readers can tell the stimulus arrangement apart.
-- **Automatic citations.** 29 built-in APA references (for example Fleshler & Hoffman, 1962, for VI/VR progressions and Herrnstein, 1961, for concurrent schedules) are collected from the schedules actually used and listed in `method.references`.
-- **English and Japanese.** The `jeab` and `jaba` styles share one compiler; custom styles and citation formats can be registered with `register_style` and `register_citation_format`.
-- **Round trip.** [contingency-procedure2dsl](https://github.com/OperantKit/contingency-procedure2dsl) extracts a schedule AST from this prose; for example, the paragraphs generated for `Mult(FR5, EXT)` and `Chain(FR10, FI30s)` are read back to the original schedule.
+Responses were reinforced under a concurrent VI 30-s VI 60-s schedule. A 2-s changeover delay was in effect.
 
-## Usage
+### References
 
-```python
-from contingency_dsl2procedure import compile_method
-
-# Input: plain dict conforming to contingency-dsl/ast-schema.json
-ast = {
-    "type": "Program",
-    "param_decls": [],
-    "bindings": [],
-    "schedule": {
-        "type": "Compound",
-        "combinator": "Conc",
-        "components": [
-            {"type": "Atomic", "dist": "V", "domain": "I", "value": 30.0, "time_unit": "s"},
-            {"type": "Atomic", "dist": "V", "domain": "I", "value": 60.0, "time_unit": "s"},
-        ],
-    },
-}
-
-# JEAB (English, default)
-method = compile_method(ast, style="jeab")
-print(method.procedure)
-# Responses were reinforced under a concurrent VI 30-s VI 60-s schedule.
-
-# J-ABA (Japanese)
-method_ja = compile_method(ast, style="jaba")
-print(method_ja.procedure)
-# 並立 VI 30-s VI 60-sスケジュールに従って反応が強化された。
-
-# References are auto-collected
-print(method.references)
-# (Reference(key='fleshler_hoffman_1962', ...),)
+Fleshler, M., & Hoffman, H. S. (1962). A progression for generating variable-interval schedules. *Journal of the Experimental Analysis of Behavior*, *5*, 529-530. https://doi.org/10.1901/jeab.1962.5-529
+Herrnstein, R. J. (1961). Relative and absolute strength of response as a function of frequency of reinforcement. *Journal of the Experimental Analysis of Behavior*, *4*, 267-272. https://doi.org/10.1901/jeab.1961.4-267
 ```
 
-The same compiler is available on the command line; `INPUT` is a JSON file or `-` for stdin:
+With contingency-dsl-py installed, `to_dict(parse("Conc(VI30s, VI60s, COD=2s)"))` produces the dictionary above (plus an empty `program_annotations` list) and compiles to the same paragraph.
+
+## What it covers
+
+- Atomic schedules (FR, VR, RR, FI, VI, RI, FT, VT, RT, and EXT/CRF), compound schedules (`Conc`, `Alt`, `Conj`, `Chain`, `Tand`, `Mult`, `Mix`, `Overlay`, `Interpolate`), DRL / DRH / DRO, progressive ratio, second-order schedules, limited hold, aversive procedures, adjusting and interlocking schedules, matching-to-sample and go/no-go, respondent procedures, and multi-phase designs.
+- Changeover delay, fixed-ratio changeover, limited hold, blackout, and reinforcement delay are written as sentences.
+- `Mult` and `Chain` components are described as signaled by distinct exteroceptive discriminative stimuli; `Mix` and `Tand` components as unsignaled.
+- `compile_paper` handles a whole paper with several experiments. `register_style` and `register_citation_format` add your own journal style or citation format.
+
+## Command line
+
+The same compiler runs from the command line. The input is a JSON file with the parsed dictionary, or `-` for standard input:
 
 ```bash
 contingency-dsl2procedure ast.json --style jaba --output method.md
 ```
+
+`--heading-level` sets the Markdown heading depth, and `--all-experiments` renders every experiment of a paper instead of only the first.
+
+## Limitations
+
+- The input is the parsed dictionary. This package does not read schedule text; use contingency-dsl-py for that.
+- Inside a compound schedule, a component that is a stateful schedule (adjusting, interlocking), an aversive procedure, or a name bound with `let` is left out of the sentence. For example, `Mult(Interlock(R0=300, T=10min), EXT)` gives "Responses were reinforced under a multiple  extinction schedule."
+- It writes only what the expression and its annotations state. Anything else that belongs in the Method section has to be added by hand.
+
+## For contributors
+
+```bash
+git clone https://github.com/OperantKit/contingency-dsl2procedure
+cd contingency-dsl2procedure
+python -m venv .venv
+.venv/bin/python -m pip install -e ".[test]"
+.venv/bin/python -m pytest -q
+```
+
+The tests build the dictionaries directly and do not need contingency-dsl-py. `tests/test_conformance_smoke.py` also compiles the [contingency-dsl](https://github.com/OperantKit/contingency-dsl) test cases when a contingency-dsl clone sits next to this one; otherwise it is skipped. Every `python` block in this README and in `README.ja.md` is run by `tests/test_readme_examples.py`. Notes for AI coding agents are in [AGENTS.md](AGENTS.md).
+
+## References
+
+- Fleshler, M., & Hoffman, H. S. (1962). A progression for generating variable-interval schedules. *Journal of the Experimental Analysis of Behavior*, 5(4), 529–530. https://doi.org/10.1901/jeab.1962.5-529
+
+## Citation and license
+
+Cite this package with [CITATION.cff](CITATION.cff). MIT License; see [LICENSE](LICENSE).

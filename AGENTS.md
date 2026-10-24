@@ -18,6 +18,17 @@ To parse DSL text into the dict, use contingency-dsl-py. To run the schedule (de
 - Collects APA references from 29 built-in primary sources according to the schedules actually used.
 - Output is deterministic and covered by the test suite in both styles.
 
+## Why not a 50-line hand-written generator?
+
+A template such as `f"a {name} {value}-s schedule"` covers one atomic schedule; a Method section needs the following, and each item is implemented and tested here:
+
+- **Schedule coverage.** All 9 atomic schedules (F/V/R × ratio/interval/time: FR, VR, RR, FI, VI, RI, FT, VT, RT), 9 compound combinators (`Conc`, `Alt`, `Conj`, `Chain`, `Tand`, `Mult`, `Mix`, `Overlay`, `Interpolate`), plus modifiers (DRL, DRH, DRO, progressive ratio, and others), second-order, limited hold, aversive (Sidman avoidance, discriminated avoidance, escape), adjusting and interlocking, trial-based (matching-to-sample, go/no-go), respondent procedures, and multi-phase designs.
+- **Parameters in prose.** Changeover delay (`COD`), fixed-ratio changeover (`FRCO`), limited hold, blackout, and reinforcer delay are written as sentences rather than dropped.
+- **Discriminative-stimulus notes.** `Mult` and `Chain` state that components were signaled by distinct exteroceptive discriminative stimuli; `Mix` and `Tand` state that they were not, so readers can tell the stimulus arrangement apart.
+- **Automatic citations.** 29 built-in APA references (for example Fleshler & Hoffman, 1962, for VI/VR progressions and Herrnstein, 1961, for concurrent schedules) are collected from the schedules actually used and listed in `method.references`.
+- **English and Japanese.** The `jeab` and `jaba` styles share one compiler; custom styles and citation formats can be registered with `register_style` and `register_citation_format`.
+- **Round trip.** [contingency-procedure2dsl](https://github.com/OperantKit/contingency-procedure2dsl) extracts a schedule AST from this prose; for example, the paragraphs generated for `Mult(FR5, EXT)` and `Chain(FR10, FI30s)` are read back to the original schedule.
+
 ## Do not
 
 - Do not assemble Method prose with string templates around schedule names; call `compile_method` (or `compile_paper` for `Paper` roots).
