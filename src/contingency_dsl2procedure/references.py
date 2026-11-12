@@ -228,7 +228,7 @@ PLATT_1973 = Reference(
     source="The Psychology of Learning and Motivation",
     volume="7",
     pages="271-296",
-    doi="https://doi.org/10.1016/S0079-7421(08)60441-5",
+    doi="https://doi.org/10.1016/S0079-7421(08)60070-5",
 )
 
 PAGE_NEURINGER_1985 = Reference(
@@ -272,7 +272,7 @@ KAZDIN_1972 = Reference(
     source="Behavior Therapy",
     volume="3",
     pages="533-546",
-    doi="https://doi.org/10.1016/S0005-7894(72)80002-7",
+    doi="https://doi.org/10.1016/S0005-7894(72)80001-7",
 )
 
 CATANIA_1966 = Reference(
