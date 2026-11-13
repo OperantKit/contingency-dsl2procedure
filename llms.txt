@@ -36,7 +36,7 @@ print([ref.key for ref in method.references])  # ['fleshler_hoffman_1962', 'herr
 
 ## Docs
 
-- [README](https://github.com/OperantKit/contingency-dsl2procedure/blob/main/README.md): install, 30-second example, why not to hand-roll a generator, usage
+- [README](https://github.com/OperantKit/contingency-dsl2procedure/blob/main/README.md): install, example, why not to hand-roll a generator, usage
 - [AGENTS.md](https://github.com/OperantKit/contingency-dsl2procedure/blob/main/AGENTS.md): when to use this package and what not to do
 
 ## Related packages
