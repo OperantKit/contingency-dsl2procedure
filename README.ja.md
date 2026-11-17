@@ -2,12 +2,12 @@
 
 :gb: [English README](README.md)
 
-contingency-dsl2procedure は、強化スケジュールから方法セクション（Method 節）の Procedure の段落を書きます。英語は *Journal of the Experimental Analysis of Behavior*（JEAB）の書き方、日本語は日本行動分析学会（J-ABA）の書き方です。スケジュールにアノテーションがあれば、Subjects と Apparatus の段落も書きます。入力は [contingency-dsl](https://github.com/OperantKit/contingency-dsl) の式を構文解析した結果なので、[OperantKit](https://github.com/OperantKit) では、セッションを動かす式とその記述を生む式が同じものになります。
+contingency-dsl2procedure は、強化スケジュールから方法セクション (Method 節) の Procedure の段落を書きます。英語は *Journal of the Experimental Analysis of Behavior*(JEAB) の書き方、日本語は日本行動分析学会 (J-ABA) の書き方です。スケジュールにアノテーションがあれば、Subjects と Apparatus の段落も書きます。入力は [contingency-dsl](https://github.com/OperantKit/contingency-dsl) の式を構文解析した結果なので、[OperantKit](https://github.com/OperantKit) では、セッションを動かす式とその記述を生む式が同じものになります。
 
 **要点**
 
-- 段落は実際にプログラムしたスケジュールから作られるので、切替遅延（changeover delay, COD）や制限時間（limited hold）のようなパラメータが書き漏らされません。
-- 使った手続きの文献が、組み込みの 29 件の一覧から自動で加わります（例: VI の間隔の数列には Fleshler & Hoffman, 1962）。
+- 段落は実際にプログラムしたスケジュールから作られるので、切り替え遅延 (changeover delay, COD) や制限時間 (limited hold) のようなパラメータが書き漏らされません。
+- 使った手続きの文献が、組み込みの 29 件の一覧から自動で加わります (例: VI の間隔の数列には Fleshler & Hoffman, 1962)。
 - 同じ入力から英語と日本語の両方を書けます。
 
 ## インストール
@@ -67,12 +67,12 @@ Fleshler, M., & Hoffman, H. S. (1962). A progression for generating variable-int
 Herrnstein, R. J. (1961). Relative and absolute strength of response as a function of frequency of reinforcement. *Journal of the Experimental Analysis of Behavior*, *4*, 267-272. https://doi.org/10.1901/jeab.1961.4-267
 ```
 
-contingency-dsl-py を入れてあれば、`to_dict(parse("Conc(VI30s, VI60s, COD=2s)"))` で上の辞書（と空の `program_annotations` の一覧）ができ、同じ段落になります。
+contingency-dsl-py を入れてあれば、`to_dict(parse("Conc(VI30s, VI60s, COD=2s)"))` で上の辞書 (と空の `program_annotations` の一覧) ができ、同じ段落になります。
 
 ## 書けるもの
 
-- 単一のスケジュール（FR、VR、RR、FI、VI、RI、FT、VT、RT、および EXT/CRF）、複合スケジュール（`Conc`、`Alt`、`Conj`、`Chain`、`Tand`、`Mult`、`Mix`、`Overlay`、`Interpolate`）、DRL / DRH / DRO、累進比率、二次スケジュール、制限時間、嫌悪性の手続き、調整スケジュールと連動スケジュール、見本合わせと go/no-go、レスポンデントの手続き、複数フェーズのデザイン。
-- 切替遅延、固定比率の切替、ブラックアウト、制限時間、強化遅延は文として書かれます。
+- 単一のスケジュール (FR、VR、RR、FI、VI、RI、FT、VT、RT、および EXT/CRF)、複合スケジュール (`Conc`、`Alt`、`Conj`、`Chain`、`Tand`、`Mult`、`Mix`、`Overlay`、`Interpolate`)、DRL / DRH / DRO、累進比率、二次スケジュール、制限時間、嫌悪性の手続き、調整スケジュールと連動スケジュール、見本合わせと go/no-go、レスポンデントの手続き、複数フェーズのデザイン。
+- 切り替え遅延、固定比率の切替、ブラックアウト、制限時間、強化遅延は文として書かれます。
 - `Mult` と `Chain` の成分は、それぞれ異なる外受容性の弁別刺激で信号されたと書かれ、`Mix` と `Tand` の成分は信号されなかったと書かれます。
 - `compile_paper` は複数の実験を含む論文全体を扱います。`register_style` と `register_citation_format` で、独自の雑誌の書き方や文献の形式を加えられます。
 
@@ -89,7 +89,7 @@ contingency-dsl2procedure ast.json --style jaba --output method.md
 ## 制限
 
 - 入力は構文解析済みの辞書です。このパッケージはスケジュールのテキストを読まないので、それには contingency-dsl-py を使います。
-- 複合スケジュールの中で、状態を持つスケジュール（調整、連動）、嫌悪性の手続き、`let` で名前を付けたスケジュールが成分になっていると、その成分は文から抜け落ちます。例えば `Mult(Interlock(R0=300, T=10min), EXT)` からは「Responses were reinforced under a multiple  extinction schedule.」が出力されます。
+- 複合スケジュールの中で、状態を持つスケジュール (調整、連動)、嫌悪性の手続き、`let` で名前を付けたスケジュールが成分になっていると、その成分は文から抜け落ちます。例えば `Mult(Interlock(R0=300, T=10min), EXT)` からは「Responses were reinforced under a multiple  extinction schedule.」が出力されます。
 - 書くのは、式とそのアノテーションに書かれていることだけです。Method 節に必要なそれ以外のことは、手で書き足す必要があります。
 
 ## 開発に参加する人へ
